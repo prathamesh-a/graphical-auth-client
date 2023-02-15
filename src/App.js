@@ -5,10 +5,12 @@ import Home from "./components/Landing";
 import Signup from "./components/Signup";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
+import Loader from "./components/Items/Loader";
 
 function App() {
 
     const [page, setPage] = useState("home")
+    const [loading, setLoading] = useState(false)
     const [loggedIn, setLoggedIn] = useState(false)
     const [userInfo, setUserInfo] = useState({
         username: "",
@@ -18,9 +20,9 @@ function App() {
     function getCurrentPage() {
         switch (page) {
             case Page.LOGIN_PAGE:
-                return <Login setPage={setPage} setLoggedIn={setLoggedIn} setUserInfo={setUserInfo}/>
+                return <Login setLoading={setLoading} setPage={setPage} setLoggedIn={setLoggedIn} setUserInfo={setUserInfo}/>
             case Page.SIGNUP_PAGE:
-                return <Signup setPage={setPage} setLoggedIn={setLoggedIn} setUserInfo={setUserInfo}/>
+                return <Signup setLoading={setLoading} setPage={setPage} setLoggedIn={setLoggedIn} setUserInfo={setUserInfo}/>
             case Page.HOME_PAGE:
             default:
                 return <Home />
@@ -28,12 +30,15 @@ function App() {
     }
 
     return (
-        <div className="">
-            <Navbar setUserInfo={setUserInfo} setPage={setPage} currentPage={page} setLoggedIn={setLoggedIn} loggedIn={loggedIn} userInfo={userInfo}/>
-            {getCurrentPage()}
-            <Footer setPage={setPage}/>
+        <div>
+            { loading && <Loader/> }
+            <div className="">
+                <Navbar setUserInfo={setUserInfo} setPage={setPage} currentPage={page} setLoggedIn={setLoggedIn} loggedIn={loggedIn} userInfo={userInfo}/>
+                {getCurrentPage()}
+                <Footer setPage={setPage}/>
+            </div>
         </div>
+
     );
 }
-
 export default App;

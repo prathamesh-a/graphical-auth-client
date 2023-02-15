@@ -71,15 +71,21 @@ export default function Signup(props) {
             Toast("Chose minimum 4 images!")
             return
         }
+        props.setLoading(true)
         axios.post(`${api.url}/api/user/signup`, signupInfo)
             .then(res => {
+                    props.setLoading(false)
                     console.log(res.data)
                     props.setUserInfo({email: res.data.email, username: res.data.username})
                     props.setLoggedIn(true)
                     props.setPage(Page.HOME_PAGE)
                 }
             )
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err)
+                props.setLoading(false)
+                Toast(err.response.data.message)
+            })
     }
 
     function validateData() {
@@ -99,8 +105,8 @@ export default function Signup(props) {
     }
 
     async function validateUsernameAndEmail() {
-        const isEmailExist = await checkEmail(signupInfo.email)
-        const isUsernameExists = await checkUsername(signupInfo.username)
+        const isEmailExist = await checkEmail(signupInfo.email, props.setLoading)
+        const isUsernameExists = await checkUsername(signupInfo.username, props.setLoading)
 
         if (isUsernameExists) Toast("Username already exists!")
         else if (isEmailExist) Toast("Email already exists!")

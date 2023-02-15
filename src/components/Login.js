@@ -54,7 +54,7 @@ export default function Login(props) {
     }
 
     async function validateUsernameAndEmail() {
-        const isUsernameExists = await checkUsername(loginInfo.username)
+        const isUsernameExists = await checkUsername(loginInfo.username, props.setLoading)
         if (!isUsernameExists) Toast("Username does not exists!")
         return isUsernameExists
     }
@@ -104,9 +104,10 @@ export default function Login(props) {
             Toast("Chose minimum 4 images!")
             return
         }
-
+        props.setLoading(true)
         axios.post(`${api.url}/api/user/login`, loginInfo)
             .then(res => {
+                props.setLoading(false)
                 console.log(res.data)
                 props.setUserInfo({email: res.data.email, username: res.data.username})
                 props.setLoggedIn(true)
@@ -114,6 +115,7 @@ export default function Login(props) {
             })
             .catch(err => {
                 //console.log(err.response.data.message)
+                props.setLoading(false)
                 Toast(err.response.data.message)
             })
     }

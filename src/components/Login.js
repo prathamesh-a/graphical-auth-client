@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import { checkUsername} from "../util/validation";
-import Toast from "../util/toast";
+import {successToast, Toast} from "../util/toast";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import PasswordIcon from "./Items/PasswordIcon";
@@ -111,6 +111,7 @@ export default function Login(props) {
                 console.log(res.data)
                 props.setUserInfo({email: res.data.email, username: res.data.username})
                 props.setLoggedIn(true)
+                successToast("Logged In!")
                 props.setPage(Page.HOME_PAGE)
             })
             .catch(err => {
@@ -149,7 +150,7 @@ export default function Login(props) {
                     <p className="text-white text-5xl  font-bold">Set Graphical Password</p><br/>
                     <p className="text-white text-2xl">Select Images For Your Graphical Password.</p>
                     <p className="text-white text-2xl">Chose Minimum 4 Images.</p><br/>
-                    <button onClick={login} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Create Account</button>
+                    <button onClick={login} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Login</button>
                     <button onClick={() => setNext(false)} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
                         <FontAwesomeIcon className="text-white" icon={faArrowLeft} />
                     </button>

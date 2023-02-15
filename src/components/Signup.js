@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import validator from "validator/es";
 import axios from "axios";
-import Toast from "../util/toast";
+import {Toast} from "../util/toast";
 import {checkEmail, checkUsername} from "../util/validation";
 import {Page} from "../util/config";
 import {api} from "../static/config";

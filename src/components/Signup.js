@@ -8,6 +8,7 @@ import axios from "axios";
 import Toast from "../util/toast";
 import {checkEmail, checkUsername} from "../util/validation";
 import {Page} from "../util/config";
+import {api} from "../static/config";
 
 export default function Signup(props) {
 
@@ -70,7 +71,7 @@ export default function Signup(props) {
             Toast("Chose minimum 4 images!")
             return
         }
-        axios.post("http://localhost:5000/api/user/signup", signupInfo)
+        axios.post(`${api.url}/api/user/signup`, signupInfo)
             .then(res => {
                     console.log(res.data)
                     props.setUserInfo({email: res.data.email, username: res.data.username})

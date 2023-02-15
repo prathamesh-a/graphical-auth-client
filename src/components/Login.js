@@ -8,6 +8,7 @@ import PasswordIcon from "./Items/PasswordIcon";
 import {icons} from "../static/icons_data";
 import axios from "axios";
 import {Page} from "../util/config";
+import {api} from "../static/config";
 
 export default function Login(props) {
 
@@ -104,7 +105,7 @@ export default function Login(props) {
             return
         }
 
-        axios.post("http://localhost:5000/api/user/login", loginInfo)
+        axios.post(`${api.url}/api/user/login`, loginInfo)
             .then(res => {
                 console.log(res.data)
                 props.setUserInfo({email: res.data.email, username: res.data.username})

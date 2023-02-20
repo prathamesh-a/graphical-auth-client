@@ -9,6 +9,7 @@ import {icons} from "../static/icons_data";
 import axios from "axios";
 import {Page} from "../util/config";
 import {api} from "../static/config";
+import removeElementFromArray from "../util/util";
 
 export default function Login(props) {
 
@@ -64,10 +65,14 @@ export default function Login(props) {
     }
 
     useEffect(function() {
-        const newPattern = [];
+        const newPattern = loginInfo.pattern;
         for(let i=0; i<iconsData.length; i++) {
-            if (iconsData[i].selected) {
-                newPattern.push(iconsData[i].id)
+            const icon = iconsData[i];
+            if (icon.selected && (!newPattern.includes(icon.id))) {
+                newPattern.push(icon.id)
+            }
+            else if (newPattern.includes(icon.id) && !icon.selected){
+                removeElementFromArray(icon.id, newPattern)
             }
         }
         setLoginInfo(prev => {
@@ -100,6 +105,7 @@ export default function Login(props) {
     }
 
     function login() {
+        console.log(loginInfo.pattern)
         if (loginInfo.pattern.length < 4) {
             Toast("Chose minimum 4 images!")
             return

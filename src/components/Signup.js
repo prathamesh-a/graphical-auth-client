@@ -9,6 +9,8 @@ import {Toast} from "../util/toast";
 import {checkEmail, checkUsername} from "../util/validation";
 import {Page} from "../util/config";
 import {api} from "../static/config";
+import Switch from "react-switch";
+import removeElementFromArray from "../util/util";
 
 export default function Signup(props) {
 
@@ -18,7 +20,8 @@ export default function Signup(props) {
         username: "",
         email: "",
         password: "",
-        pattern: []
+        pattern: [],
+        sequence: false
     })
 
     function handleChange(event) {
@@ -31,10 +34,14 @@ export default function Signup(props) {
     }
 
     useEffect(function() {
-        const newPattern = [];
+        const newPattern = signupInfo.pattern;
         for(let i=0; i<iconsData.length; i++) {
-            if (iconsData[i].selected) {
-                newPattern.push(iconsData[i].id)
+            const icon = iconsData[i];
+            if (icon.selected && (!newPattern.includes(icon.id))) {
+                newPattern.push(icon.id)
+            }
+            else if (newPattern.includes(icon.id) && !icon.selected){
+                removeElementFromArray(icon.id, newPattern)
             }
         }
         setSignupInfo(prev => {
@@ -62,11 +69,21 @@ export default function Signup(props) {
         }))
     }
 
+    function handleSwitchChange(event) {
+        setSignupInfo(prev => {
+            return {
+                ...prev,
+                sequence: !prev.sequence
+            }
+        })
+    }
+
     function getIcons() {
         return iconsData.map(prev => <PasswordIcon key={prev.id} src={prev.url} selected={prev.selected} stateChange={() => handleStateChange(prev.id)}/>)
     }
 
     function createAccount() {
+        //console.log(signupInfo.pattern)
         if (signupInfo.pattern.length < 4) {
             Toast("Chose minimum 4 images!")
             return
@@ -148,6 +165,21 @@ export default function Signup(props) {
                     <p className="text-white text-5xl  font-bold">Set Graphical Password</p><br/>
                     <p className="text-white text-2xl">Select Images For Your Graphical Password.</p>
                     <p className="text-white text-2xl">Chose Minimum 4 Images.</p><br/>
+                    <div className="flex">
+                        <p className="text-white text-2xl">Remember Sequence? </p>
+                        <Switch className="ml-4 mt-1"
+                                checked={signupInfo.sequence}
+                                onChange={handleSwitchChange}
+                                onColor="#DCFFCE"
+                                onHandleColor="#94FF69"
+                                handleDiameter={30}
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                width={48}
+                        />
+                    </div>
                     <button onClick={createAccount} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Create Account</button>
                     <button onClick={() => setNext(false)} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
                         <FontAwesomeIcon className="text-white" icon={faArrowLeft} />

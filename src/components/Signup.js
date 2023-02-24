@@ -1,27 +1,28 @@
 import {useEffect, useState} from "react";
-import {icons} from "../static/icons_data";
 import PasswordIcon from "./Items/PasswordIcon";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import {faArrowLeft, faSearch} from '@fortawesome/free-solid-svg-icons'
 import validator from "validator/es";
 import axios from "axios";
-import {Toast} from "../util/toast";
+import {successToast, Toast} from "../util/toast";
 import {checkEmail, checkUsername} from "../util/validation";
 import {Page} from "../util/config";
 import {api} from "../static/config";
-import Switch from "react-switch";
-import removeElementFromArray from "../util/util";
+import {getNameByNumber} from "../util/util";
+import {nanoid} from "nanoid";
 
 export default function Signup(props) {
 
     const [next, setNext] = useState(false)
-    const [iconsData, setIconsData] = useState(icons)
+    const [iteration, setIteration] = useState(0)
+    const [keyword, setKeyword] = useState("")
+    const [imageData, setImageData] = useState([])
     const [signupInfo, setSignupInfo] = useState({
         username: "",
         email: "",
         password: "",
-        pattern: [],
-        sequence: false
+        pattern: ["", "", "", ""],
+        sets: [[]]
     })
 
     function handleChange(event) {
@@ -34,58 +35,43 @@ export default function Signup(props) {
     }
 
     useEffect(function() {
-        const newPattern = signupInfo.pattern;
-        for(let i=0; i<iconsData.length; i++) {
-            const icon = iconsData[i];
-            if (icon.selected && (!newPattern.includes(icon.id))) {
-                newPattern.push(icon.id)
+        setSignupInfo(prev => {
+            return {
+                ...prev,
+                "sets": imageData,
+                "pattern": ["", "", "", ""]
             }
-            else if (newPattern.includes(icon.id) && !icon.selected){
-                removeElementFromArray(icon.id, newPattern)
-            }
-        }
+        })
+    }, [imageData])
+
+    function getIcons() {
+        return imageData[iteration].map(prev => <PasswordIcon iteration={iteration} id={prev.id} key={nanoid()} src={prev.url} selected={prev.id === signupInfo.pattern[iteration]} onClick={handleImageClick}/>)
+    }
+
+    function handleImageClick(id, iteration) {
+        var newPattern = signupInfo.pattern
+        newPattern[iteration] = id
         setSignupInfo(prev => {
             return {
                 ...prev,
                 "pattern": newPattern
             }
         })
-    }, [iconsData])
-
-    function handleStateChange(nanoId) {
-
-        let currentIndex = iconsData.length,  randomIndex;
-        while (currentIndex !== 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-            [iconsData[currentIndex], iconsData[randomIndex]] = [iconsData[randomIndex], iconsData[currentIndex]];
-        }
-
-        setIconsData(iconsData.map(prevData => {
-            return prevData.id === nanoId ? {
-                ...prevData,
-                "selected": !prevData.selected
-            } : prevData
-        }))
-    }
-
-    function handleSwitchChange(event) {
-        setSignupInfo(prev => {
-            return {
-                ...prev,
-                sequence: !prev.sequence
-            }
-        })
-    }
-
-    function getIcons() {
-        return iconsData.map(prev => <PasswordIcon key={prev.id} src={prev.url} selected={prev.selected} stateChange={() => handleStateChange(prev.id)}/>)
     }
 
     function createAccount() {
-        //console.log(signupInfo.pattern)
+        if (signupInfo.pattern[iteration] === "") {
+            Toast("Select an image first!")
+            return
+        }
+
+        if (iteration < 3) {
+            setIteration(iteration+1)
+            return
+        }
+
         if (signupInfo.pattern.length < 4) {
-            Toast("Chose minimum 4 images!")
+            Toast("Chose all 4 images!")
             return
         }
         props.setLoading(true)
@@ -95,6 +81,7 @@ export default function Signup(props) {
                     console.log(res.data)
                     props.setUserInfo({email: res.data.email, username: res.data.username})
                     props.setLoggedIn(true)
+                    successToast("Logged In!")
                     props.setPage(Page.HOME_PAGE)
                 }
             )
@@ -135,8 +122,37 @@ export default function Signup(props) {
         if (validateData() && await validateUsernameAndEmail()) {setNext(true)}
     }
 
+    function searchKeyword() {
+        if (keyword === "") {
+            Toast("Invalid keyword!")
+            return
+        }
+
+        props.setLoading(true)
+        axios.get(`${api.url}/api/image/search?keyword=${keyword}`)
+            .then(data => {
+                props.setLoading(false)
+                setImageData(data.data)
+            })
+            .catch(err => {
+                console.log(err)
+                props.setLoading(false)
+                Toast(err.response.data.message)
+            })
+    }
+
+    function getButtonTitle() {
+        if (iteration < 3) return "Next"
+        else return "Create Account"
+    }
+
+    function handleBackClick() {
+        if (iteration === 0) setNext(false)
+        else setIteration(iteration-1)
+    }
+
     return (
-        <div className=" h-[32rem] mt-12">
+        <div className=" h-[38rem] mt-12">
             {!next && <div className="flex justify-center h-full">
                 {/*IMAGE*/}
                 <div className="">
@@ -156,32 +172,33 @@ export default function Signup(props) {
                 </div>
             </div>}
 
-            {next && <div className="flex justify-center h-full">
-                <div className="grid grid-cols-3 bg-white h-full rounded-lg w-1/3 justify-items-center pt-8">
+            {next && <div className="flex h-full">
+                {imageData.length > 0 && <div
+                    className="grid grid-cols-4 bg-[#3B3B3B] h-full rounded-lg w-[75%] justify-items-center py-4 px-2 gap-2 ml-12">
                     {getIcons()}
-                </div>
+                </div>}
+                {imageData.length === 0 && <div
+                    className="text-2xl text-white flex justify-center items-center h-full bg-[#3B3B3B] w-[75%] ml-12 rounded-lg">
+                    <p className="bg-red-600 px-3 py-1 rounded-lg">No Images :(</p>
+                </div>}
 
-                <div className="font-['Work_Sans'] mt-4 ml-16">
+                <div className="font-['Work_Sans'] mt-4 ml-12">
                     <p className="text-white text-5xl  font-bold">Set Graphical Password</p><br/>
-                    <p className="text-white text-2xl">Select Images For Your Graphical Password.</p>
-                    <p className="text-white text-2xl">Chose Minimum 4 Images.</p><br/>
-                    <div className="flex">
-                        <p className="text-white text-2xl">Remember Sequence? </p>
-                        <Switch className="ml-4 mt-1"
-                                checked={signupInfo.sequence}
-                                onChange={handleSwitchChange}
-                                onColor="#DCFFCE"
-                                onHandleColor="#94FF69"
-                                handleDiameter={30}
-                                uncheckedIcon={false}
-                                checkedIcon={false}
-                                height={20}
-                                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                                width={48}
-                        />
-                    </div>
-                    <button onClick={createAccount} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Create Account</button>
-                    <button onClick={() => setNext(false)} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
+                    <p className="text-white text-2xl">Enter keyword to get images.</p>
+                    <p className="text-white text-2xl">Select {getNameByNumber(iteration+1)} Image.</p>
+                    <br/>
+                    {iteration === 0 && <div className="align-middle items-center">
+                        <p className="text-white text-2xl">Type Keyword: </p>
+                        <div className=" rounded-lg flex mt-2">
+                            <input onChange={(event) => setKeyword(event.target.value)} value={keyword}
+                                   placeholder="Try 'Cats'" className="rounded-l-md px-4 bg-gray-100 text-2xl py-1"/>
+                            <button onClick={searchKeyword}
+                                    className="bg-gray-100 transition duration-500 ease-in-out rounded-r-lg px-4 h-12 hover:bg-gray-300">
+                                <FontAwesomeIcon className="text-black" icon={faSearch}/></button>
+                        </div>
+                    </div>}
+                    <button onClick={createAccount} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-12 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">{getButtonTitle()}</button>
+                    <button onClick={handleBackClick} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
                         <FontAwesomeIcon className="text-white" icon={faArrowLeft} />
                     </button>
 
@@ -190,3 +207,23 @@ export default function Signup(props) {
         </div>
     )
 }
+
+
+// useEffect(function() {
+//     const newPattern = signupInfo.pattern;
+//     for(let i=0; i<iconsData.length; i++) {
+//         const icon = iconsData[i];
+//         if (icon.selected && (!newPattern.includes(icon.id))) {
+//             newPattern.push(icon.id)
+//         }
+//         else if (newPattern.includes(icon.id) && !icon.selected){
+//             removeElementFromArray(icon.id, newPattern)
+//         }
+//     }
+//     setSignupInfo(prev => {
+//         return {
+//             ...prev,
+//             "pattern": newPattern
+//         }
+//     })
+// }, [iconsData])

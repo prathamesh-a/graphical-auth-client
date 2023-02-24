@@ -1,24 +1,24 @@
-import {useEffect, useState} from "react";
-import {toast} from "react-toastify";
+import {useState} from "react";
 import { checkUsername} from "../util/validation";
 import {successToast, Toast} from "../util/toast";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import PasswordIcon from "./Items/PasswordIcon";
-import {icons} from "../static/icons_data";
 import axios from "axios";
 import {Page} from "../util/config";
 import {api} from "../static/config";
-import removeElementFromArray from "../util/util";
+import {getNameByNumber} from "../util/util";
+import {nanoid} from "nanoid";
 
 export default function Login(props) {
 
     const [next, setNext] = useState(false)
-    const [iconsData, setIconsData] = useState(icons)
+    const [iteration, setIteration] = useState(0)
+    const [imageData, setImageData] = useState([])
     const [loginInfo, setLoginInfo] = useState({
         username: "",
         password: "",
-        pattern: []
+        pattern: ["", "", "", ""]
     })
 
     function handleChange(event) {
@@ -32,23 +32,11 @@ export default function Login(props) {
 
     function validateData() {
         if (loginInfo.username.length < 1) {
-            toast.error('Invalid Username', {position: "top-center", autoClose: 3000, hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-            })
+            Toast("Invalid Username!")
             return false
         }
         else if (loginInfo.password.length < 8) {
-            toast.error('Password Length Must Be Greater Than 8', {position: "top-center", autoClose: 3000, hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-            })
+            Toast("Password Length Must Be Greater Than 8")
             return false
         }
         return true
@@ -61,51 +49,43 @@ export default function Login(props) {
     }
 
     async function handleNextClick(event) {
-        if (validateData() && await validateUsernameAndEmail()) setNext(true)
+        if (validateData() && await validateUsernameAndEmail()) {
+            axios.get(`${api.url}/api/image?username=${loginInfo.username}`)
+                .then(res => {
+                    setImageData(res.data)
+                    setNext(true)
+                })
+                .catch(err => Toast("Internal server error"))
+        }
     }
 
-    useEffect(function() {
-        const newPattern = loginInfo.pattern;
-        for(let i=0; i<iconsData.length; i++) {
-            const icon = iconsData[i];
-            if (icon.selected && (!newPattern.includes(icon.id))) {
-                newPattern.push(icon.id)
-            }
-            else if (newPattern.includes(icon.id) && !icon.selected){
-                removeElementFromArray(icon.id, newPattern)
-            }
-        }
+    function getIcons() {
+        return imageData[iteration].map(prev => <PasswordIcon iteration={iteration} id={prev.id} key={nanoid()} src={prev.url} selected={prev.id === loginInfo.pattern[iteration]} onClick={handleImageClick}/>)
+    }
+
+    function handleImageClick(id, iteration) {
+        var newPattern = loginInfo.pattern
+        newPattern[iteration] = id
         setLoginInfo(prev => {
             return {
                 ...prev,
                 "pattern": newPattern
             }
         })
-    }, [iconsData])
-
-    function handleStateChange(nanoId) {
-
-        let currentIndex = iconsData.length,  randomIndex;
-        while (currentIndex !== 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-            [iconsData[currentIndex], iconsData[randomIndex]] = [iconsData[randomIndex], iconsData[currentIndex]];
-        }
-
-        setIconsData(iconsData.map(prevData => {
-            return prevData.id === nanoId ? {
-                ...prevData,
-                "selected": !prevData.selected
-            } : prevData
-        }))
-    }
-
-    function getIcons() {
-        return iconsData.map(prev => <PasswordIcon key={prev.id} src={prev.url} selected={prev.selected} stateChange={() => handleStateChange(prev.id)}/>)
     }
 
     function login() {
-        console.log(loginInfo.pattern)
+
+        if (loginInfo.pattern[iteration] === "") {
+            Toast("Select an image first!")
+            return
+        }
+
+        if (iteration < 3) {
+            setIteration(iteration+1)
+            return
+        }
+
         if (loginInfo.pattern.length < 4) {
             Toast("Chose minimum 4 images!")
             return
@@ -121,14 +101,23 @@ export default function Login(props) {
                 props.setPage(Page.HOME_PAGE)
             })
             .catch(err => {
-                //console.log(err.response.data.message)
                 props.setLoading(false)
                 Toast(err.response.data.message)
             })
     }
 
+    function getButtonTitle() {
+        if (iteration < 3) return "Next"
+        else return "Create Account"
+    }
+
+    function handleBackClick() {
+        if (iteration === 0) setNext(false)
+        else setIteration(iteration-1)
+    }
+
     return (
-        <div className=" h-[32rem] mt-12">
+        <div className=" h-[38rem] mt-12">
             {!next && <div className="flex justify-center h-full">
                 {/*IMAGE*/}
                 <div className="">
@@ -148,16 +137,16 @@ export default function Login(props) {
             </div>}
 
             {next && <div className="flex justify-center h-full">
-                <div className="grid grid-cols-3 bg-white h-full rounded-lg w-1/3 justify-items-center pt-8">
+                <div className="grid grid-cols-4 bg-[#3B3B3B] h-full rounded-lg w-[75%] justify-items-center py-4 px-2 gap-2 ml-12">
                     {getIcons()}
                 </div>
 
                 <div className="font-['Work_Sans'] mt-4 ml-16">
                     <p className="text-white text-5xl  font-bold">Set Graphical Password</p><br/>
                     <p className="text-white text-2xl">Select Images For Your Graphical Password.</p>
-                    <p className="text-white text-2xl">Chose Minimum 4 Images.</p><br/>
-                    <button onClick={login} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Login</button>
-                    <button onClick={() => setNext(false)} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
+                    <p className="text-white text-2xl">Select {getNameByNumber(iteration+1)} Image.</p><br/>
+                    <button onClick={login} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">{getButtonTitle()}</button>
+                    <button onClick={handleBackClick} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
                         <FontAwesomeIcon className="text-white" icon={faArrowLeft} />
                     </button>
 

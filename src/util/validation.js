@@ -4,9 +4,8 @@ import {api} from "../static/config";
 async function checkUsername(username, setLoading) {
     let flag
     setLoading(true)
-    await axios.post(`${api.url}/api/user/check/username`, {username: username})
+    await axios.get(`${api.url}/api/user/check?username=${username}`)
         .then(r => {
-            //console.log(username, r.data)
             flag =  r.data.exists
             setLoading(false)
         })
@@ -18,9 +17,8 @@ async function checkUsername(username, setLoading) {
 async function checkEmail(email, setLoading) {
     let flag
     setLoading(true)
-    await axios.post(`${api.url}/api/user/check/email`, { email: email })
+    await axios.get(`${api.url}/api/user/check?email=${email}`)
         .then(r => {
-            //console.log(email, r.data)
             flag = r.data.exists
             setLoading(false)
         })

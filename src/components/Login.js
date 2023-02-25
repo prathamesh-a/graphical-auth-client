@@ -9,10 +9,12 @@ import {Page} from "../util/config";
 import {api} from "../static/config";
 import {getNameByNumber} from "../util/util";
 import {nanoid} from "nanoid";
+import BlockedBox from "./Items/BlockedBox";
 
 export default function Login(props) {
 
     const [next, setNext] = useState(false)
+    const [blocked, setBlocked] = useState(false)
     const [iteration, setIteration] = useState(0)
     const [imageData, setImageData] = useState([])
     const [loginInfo, setLoginInfo] = useState({
@@ -102,13 +104,24 @@ export default function Login(props) {
             })
             .catch(err => {
                 props.setLoading(false)
-                Toast(err.response.data.message)
+                setIteration(0)
+                setLoginInfo(prev => {
+                    return {
+                        ...prev,
+                        "pattern": ["", "", "", ""]
+                    }
+                })
+                setNext(false)
+                if (typeof err.response.data.status != 'undefined' && err.response.data.status === 'blocked') {
+                    setBlocked(true)
+                }
+                else Toast(err.response.data.message)
             })
     }
 
     function getButtonTitle() {
         if (iteration < 3) return "Next"
-        else return "Create Account"
+        else return "Login"
     }
 
     function handleBackClick() {
@@ -118,6 +131,9 @@ export default function Login(props) {
 
     return (
         <div className=" h-[38rem] mt-12">
+
+            {blocked && <BlockedBox onClick={setBlocked}/>}
+
             {!next && <div className="flex justify-center h-full">
                 {/*IMAGE*/}
                 <div className="">
@@ -149,7 +165,6 @@ export default function Login(props) {
                     <button onClick={handleBackClick} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
                         <FontAwesomeIcon className="text-white" icon={faArrowLeft} />
                     </button>
-
                 </div>
             </div>}
         </div>

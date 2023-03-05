@@ -4,6 +4,7 @@ function removeElementFromArray(element, array) {
 }
 
 function getNameByNumber(num) {
+    // eslint-disable-next-line default-case
     switch (num) {
         case 1:
             return "First"

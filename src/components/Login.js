@@ -141,7 +141,7 @@ export default function Login(props) {
                 </div>
                 {/*LOGIN FORM*/}
                 <div className="font-['Work_Sans'] mt-16">
-                    <p className="text-white text-5xl  font-bold">Login</p><br/>
+                    <p className="text-white text-5xl font-bold">Login</p><br/>
                     <p className="text-white text-2xl">Welcome Back! Enter Your Details Below</p>
                     <p className="text-white text-2xl"></p><br/>
                     <div className="flex flex-col w-2/3">

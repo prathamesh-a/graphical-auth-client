@@ -21,7 +21,7 @@ function App() {
     function getCurrentPage() {
         switch (page) {
             case Page.CONTACT:
-                return <Contact />
+                return <Contact setLoading={setLoading}/>
             case Page.LOGIN_PAGE:
                 return <Login setLoading={setLoading} setPage={setPage} setLoggedIn={setLoggedIn} setUserInfo={setUserInfo}/>
             case Page.SIGNUP_PAGE:

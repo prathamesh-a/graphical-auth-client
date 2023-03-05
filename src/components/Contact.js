@@ -4,7 +4,7 @@ import {successToast, Toast} from "../util/toast";
 import axios from "axios";
 import {api} from "../static/config";
 
-export default function Contact() {
+export default function Contact(props) {
 
     const [data, setData] = useState({
         name: "",
@@ -23,9 +23,10 @@ export default function Contact() {
 
     function handleSubmit() {
         if (!validateData()) return
-
+        props.setLoading(true)
         axios.post(`${api.url}/api/contact`, data)
             .then(res => {
+                props.setLoading(false)
                 successToast("Message Sent")
                 clearData()
             })

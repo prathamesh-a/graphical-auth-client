@@ -1,7 +1,9 @@
 import {Page} from "../util/config";
 import {useState} from "react";
 import validator from "validator/es";
-import {toast} from "react-toastify";
+import {successToast, Toast} from "../util/toast";
+import axios from "axios";
+import {api} from "../static/config";
 
 export default function Footer(props) {
 
@@ -13,24 +15,21 @@ export default function Footer(props) {
 
     function handleSubmit() {
         if (validator.isEmail(email)) {
-            toast.success('Thank You For Subscribing!', {position: "top-center", autoClose: 3000, hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-            })
+            axios.post(`${api.url}/api/digest`, {email: email})
+                .then(() => {
+                    successToast("Thank You For Subscribing!")
+                    clearData()
+                })
+                .catch(err => {
+                    Toast(err.response.data.message)
+                    clearData()
+                })
         }
-        else {
-            toast.error('Invalid Email Address', {position: "top-center", autoClose: 3000, hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-            })
-        }
+        else Toast("Invalid Email")
+    }
 
+    function clearData() {
+        setEMail("")
     }
 
     return (
@@ -56,7 +55,7 @@ export default function Footer(props) {
                     <p className="text-gray-300 font-['Work_Sans'] mt-4">Get Exclusive Promotions & Updates.</p>
 
                     <div className="flex font-['Work_Sans']">
-                        <input onChange={handleChange} className="text-black mt-4 rounded-lg px-4 z-10" placeholder="Your Email"/>
+                        <input value={email} onChange={handleChange} className="text-black mt-4 rounded-lg px-4 z-10" placeholder="Your Email"/>
                         <button onClick={handleSubmit} className="transition duration-300 ease-in w-1/3 bg-[#A259FF] rounded-lg mt-4 border-[#A259FF] px-1 border-2 hover:bg-transparent z-20 hover:z-0 -ml-4">
                             Subscribe
                         </button>

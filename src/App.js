@@ -7,12 +7,14 @@ import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Loader from "./components/Items/Loader";
 import Contact from "./components/Contact";
+import Slider from "./components/Slider";
 
 function App() {
 
     const [page, setPage] = useState("home")
     const [loading, setLoading] = useState(false)
     const [loggedIn, setLoggedIn] = useState(false)
+    const [slider, setSlider] = useState(false)
     const [userInfo, setUserInfo] = useState({
         username: "",
         email: ""
@@ -36,7 +38,8 @@ function App() {
         <div>
             { loading && <Loader/> }
             <div className="">
-                <Navbar setUserInfo={setUserInfo} setPage={setPage} currentPage={page} setLoggedIn={setLoggedIn} loggedIn={loggedIn} userInfo={userInfo}/>
+                {slider && <Slider currentPage={page} setLoggedIn={setLoggedIn} setUserInfo={setUserInfo} setPage={setPage} loggedIn={loggedIn} userInfo={userInfo} slider={slider} setSlider={setSlider}/>}
+                <Navbar setSlider={setSlider} setUserInfo={setUserInfo} setPage={setPage} currentPage={page} setLoggedIn={setLoggedIn} loggedIn={loggedIn} userInfo={userInfo}/>
                 {getCurrentPage()}
                 <Footer setPage={setPage}/>
             </div>

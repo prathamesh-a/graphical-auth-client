@@ -152,40 +152,41 @@ export default function Signup(props) {
     }
 
     return (
-        <div className=" h-[38rem] mt-12">
+        <div className=" sm:h-[38rem] mt-12">
             {!next && <div className="flex justify-center h-full">
                 {/*IMAGE*/}
-                <div className="">
+                <div className="hidden sm:block">
                     <img className="transition duration-500 ease-in-out hover:scale-95 h-full" alt="" src="../static/img/signup.png"/>
                 </div>
                 {/*SIGNUP FORM*/}
                 <div className="font-['Work_Sans'] mt-4">
-                    <p className="text-white text-5xl  font-bold">Create Account</p><br/>
-                    <p className="text-white text-2xl">Welcome! Enter Your Details And Experience</p>
-                    <p className="text-white text-2xl">Graphical Password System.</p><br/>
-                    <div className="flex flex-col w-2/3">
-                        <input value={signupInfo.username} onChange={handleChange} name="username" className="rounded-full h-12 px-6 font-3xl" type="text" placeholder="Username"/>
-                        <input value={signupInfo.email} onChange={handleChange} name="email" className="rounded-full h-12 px-6 font-3xl mt-4" type="email" placeholder="Email"/>
-                        <input value={signupInfo.password} onChange={handleChange} name="password" className="rounded-full h-12 px-6 font-3xl mt-4" type="password" placeholder="Password"/>
+                    <p className="px-4 sm:px-0 text-white text-3xl sm:text-5xl sm:font-bold">Create Account</p><br/>
+                    <p className="text-white text-lg sm:text-2xl px-4 sm:px-0">Welcome! Enter Your Details And Experience</p>
+                    <p className="text-white text-lg sm:text-2xl px-4 sm:px-0">Graphical Password System.</p><br/>
+                    <div className="flex flex-col w-[80%] sm:w-2/3 px-4 sm:px-0">
+                        <input value={signupInfo.username} onChange={handleChange} name="username" className="rounded-full h-8 sm:h-12 px-6 font-3xl" type="text" placeholder="Username"/>
+                        <input value={signupInfo.email} onChange={handleChange} name="email" className="rounded-full h-8 sm:h-12 px-6 font-3xl mt-4" type="email" placeholder="Email"/>
+                        <input value={signupInfo.password} onChange={handleChange} name="password" className="rounded-full h-8 sm:h-12 px-6 font-3xl mt-4" type="password" placeholder="Password"/>
                     </div>
-                    <button onClick={handleNextClick} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Next</button>
+                    <button onClick={handleNextClick} className="ml-4 sm:ml-0 transition duration-500 ease-in-out h-8 sm:h-12 bg-[#A259FF] rounded-full px-6 sm:w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Next</button>
                 </div>
             </div>}
 
-            {next && <div className="flex h-full">
+            {next && <div className="sm:flex h-full">
                 {imageData.length > 0 && <div
-                    className="grid grid-cols-4 bg-[#3B3B3B] h-full rounded-lg w-[75%] justify-items-center py-4 px-2 gap-2 ml-12">
+                    className="hidden sm:grid grid-cols-4 bg-[#3B3B3B] h-full rounded-lg w-[75%] justify-items-center py-4 px-2 gap-2 ml-12">
                     {getIcons()}
                 </div>}
                 {imageData.length === 0 && <div
-                    className="text-2xl text-white flex justify-center items-center h-full bg-[#3B3B3B] w-[75%] ml-12 rounded-lg">
+                    className="text-2xl text-white hidden sm:flex justify-center items-center h-full bg-[#3B3B3B] w-[75%] ml-12 rounded-lg">
                     <p className="bg-red-600 px-3 py-1 rounded-lg">No Images :(</p>
                 </div>}
 
-                <div className="font-['Work_Sans'] mt-4 ml-12">
-                    <p className="text-white text-5xl  font-bold">Set Graphical Password</p><br/>
+                {/*DESKTOP VIEW*/}
+                <div className="hidden sm:block font-['Work_Sans'] mt-4 ml-12">
+                    <p className="text-white text-5xl font-bold">Set Graphical Password</p><br/>
                     <p className="text-white text-2xl">Enter keyword to get images.</p>
-                    <p className="text-white text-2xl">Select {getNameByNumber(iteration+1)} Image.</p>
+                    <p className="text-white text-2xl">Select <span className="text-green-400">{getNameByNumber(iteration+1)}</span> Image.</p>
                     <br/>
                     {iteration === 0 && <div className="align-middle items-center">
                         <p className="text-white text-2xl">Type Keyword: </p>
@@ -201,7 +202,38 @@ export default function Signup(props) {
                     <button onClick={handleBackClick} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
                         <FontAwesomeIcon className="text-white" icon={faArrowLeft} />
                     </button>
+                </div>
 
+                {/*MOBILE VIEW*/}
+                <div className="sm:hidden font-['Work_Sans'] mt-4 ml-4">
+                    <p className="text-white text-2xl">Set Graphical Password</p><br/>
+                    <p className="text-white text-lg">Enter keyword to get images.</p>
+                    <p className="text-white text-lg">Select <span className="text-green-400">{getNameByNumber(iteration+1)}</span> Image.</p>
+                    <br/>
+                    {iteration === 0 && <div className="align-middle items-center">
+                        <p className="text-white text-lg">Type Keyword: </p>
+                        <div className=" rounded-md flex mt-2">
+                            <input onChange={(event) => setKeyword(event.target.value)} value={keyword}
+                                   placeholder="Try 'Cats'" className="rounded-l-md px-2 bg-gray-100 h-8 text-lg py-0"/>
+                            <button onClick={searchKeyword}
+                                    className="bg-gray-100 transition duration-500 ease-in-out rounded-r-lg px-4 h-8 hover:bg-gray-300">
+                                <FontAwesomeIcon className="text-black" icon={faSearch}/></button>
+                        </div>
+                    </div>}
+
+                    {imageData.length > 0 && <div
+                        className="mt-4 grid grid-cols-2 bg-[#3B3B3B] h-full rounded-md w-full justify-items-center py-4 gap-1 gap-x-0 -ml-2">
+                        {getIcons()}
+                    </div>}
+                    {imageData.length === 0 && <div
+                        className="text-xl text-white flex justify-center items-center h-full bg-[#3B3B3B] w-[80%] rounded-md mt-4">
+                        <p className="bg-red-600 px-2 py-0 rounded-md my-8">No Images :(</p>
+                    </div>}
+
+                    <button onClick={createAccount} className="transition duration-500 ease-in-out h-8 bg-[#A259FF] rounded-full px-6 w-2/3 mt-12 text-white border-2 hover:bg-transparent border-[#A259FF]">{getButtonTitle()}</button>
+                    <button onClick={handleBackClick} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-8 ml-4 hover:bg-[#A259FF]">
+                        <FontAwesomeIcon className="text-white" icon={faArrowLeft} />
+                    </button>
                 </div>
             </div>}
         </div>

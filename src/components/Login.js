@@ -130,42 +130,62 @@ export default function Login(props) {
     }
 
     return (
-        <div className=" h-[38rem] mt-12">
+        <div className=" sm:h-[38rem] sm:mt-12">
 
             {blocked && <BlockedBox onClick={setBlocked}/>}
 
             {!next && <div className="flex justify-center h-full">
                 {/*IMAGE*/}
-                <div className="">
+                <div className="hidden sm:block">
                     <img className="transition duration-500 ease-in-out hover:scale-95 h-full" alt="" src="../static/img/signup.png"/>
                 </div>
                 {/*LOGIN FORM*/}
                 <div className="font-['Work_Sans'] mt-16">
-                    <p className="text-white text-5xl font-bold">Login</p><br/>
-                    <p className="text-white text-2xl">Welcome Back! Enter Your Details Below</p>
+                    <p className="text-white text-3xl sm:text-5xl sm:font-bold px-4 sm:px-0">Login</p><br/>
+                    <p className="text-white text-lg sm:text-2xl px-4 sm:px-0">Welcome Back! Enter Your Details Below</p>
                     <p className="text-white text-2xl"></p><br/>
-                    <div className="flex flex-col w-2/3">
-                        <input value={loginInfo.username} onChange={handleChange} name="username" className="rounded-full h-12 px-6 font-3xl" type="text" placeholder="Username"/>
-                        <input value={loginInfo.password} onChange={handleChange} name="password" className="rounded-full h-12 px-6 font-3xl mt-4" type="password" placeholder="Password"/>
+                    <div className="flex flex-col w-[80%] sm:w-2/3 px-4 sm:px-0">
+                        <input value={loginInfo.username} onChange={handleChange} name="username" className="rounded-full h-8 sm:h-12 px-6 font-3xl" type="text" placeholder="Username"/>
+                        <input value={loginInfo.password} onChange={handleChange} name="password" className="rounded-full h-8 sm:h-12 px-6 font-3xl mt-4" type="password" placeholder="Password"/>
                     </div>
-                    <button onClick={handleNextClick} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Next</button>
+                    <button onClick={handleNextClick} className="ml-4 sm:ml-0 transition duration-500 ease-in-out h-8 sm:h-12 bg-[#A259FF] rounded-full px-6 sm:w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">Next</button>
                 </div>
             </div>}
 
-            {next && <div className="flex justify-center h-full">
-                <div className="grid grid-cols-4 bg-[#3B3B3B] h-full rounded-lg w-[75%] justify-items-center py-4 px-2 gap-2 ml-12">
+            {next && <div className="sm:flex justify-center h-full">
+                <div className="hidden sm:grid grid-cols-4 bg-[#3B3B3B] h-full rounded-lg w-[75%] justify-items-center py-4 px-2 gap-2 ml-12">
                     {getIcons()}
                 </div>
 
-                <div className="font-['Work_Sans'] mt-4 ml-16">
+                {/*DESKTOP VIEW*/}
+                <div className="sm:block hidden font-['Work_Sans'] mt-4 ml-16">
                     <p className="text-white text-5xl  font-bold">Set Graphical Password</p><br/>
                     <p className="text-white text-2xl">Select Images For Your Graphical Password.</p>
-                    <p className="text-white text-2xl">Select {getNameByNumber(iteration+1)} Image.</p><br/>
+                    <p className="text-white text-2xl">Select <span className="text-green-400">{getNameByNumber(iteration+1)}</span> Image.</p><br/>
                     <button onClick={login} className="transition duration-500 ease-in-out h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF] font-bold">{getButtonTitle()}</button>
                     <button onClick={handleBackClick} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-12 ml-4 hover:bg-[#A259FF]">
                         <FontAwesomeIcon className="text-white" icon={faArrowLeft} />
                     </button>
                 </div>
+
+                {/*MOBILE VIEW*/}
+                <div className="sm:hidden font-['Work_Sans'] mt-4 ml-4">
+                    <p className="text-white text-2xl font-bold">Set Graphical Password</p><br/>
+                    <p className="text-white text-lg">Select Images For Your Graphical Password.</p>
+                    <p className="text-white text-lg">Select <span className="text-green-400">{getNameByNumber(iteration+1)}</span> Image.</p><br/>
+
+                    <div className="-ml-4 grid grid-cols-2 bg-[#3B3B3B] gap-x-0 h-full rounded-md justify-items-center py-4 gap-1">
+                        {getIcons()}
+                    </div>
+
+                    <button onClick={login} className="transition duration-500 ease-in-out h-8 sm:h-12 bg-[#A259FF] rounded-full px-6 w-2/3 mt-6 text-white border-2 hover:bg-transparent border-[#A259FF]">{getButtonTitle()}</button>
+                    <button onClick={handleBackClick} className="transition duration-500 ease-in-out border-2 border-[#A259FF] rounded-full px-4 h-8 sm:h-12 ml-4 hover:bg-[#A259FF]">
+                        <FontAwesomeIcon className="text-white" icon={faArrowLeft} />
+                    </button>
+                </div>
+
+
+
             </div>}
         </div>
 

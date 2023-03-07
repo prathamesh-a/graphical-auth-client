@@ -1,10 +1,8 @@
-import {disableBodyScroll} from "body-scroll-lock";
 import {Page} from "../util/config";
+import {motion} from "framer-motion";
 
 export default function Slider(props) {
 
-    //props.slider ? disableBodyScroll(document) : enableBodyScroll(document)
-    //disableBodyScroll(document)
     const additionalClasses = "text-[#A259FF]"
 
     function closeSlider() {
@@ -24,8 +22,8 @@ export default function Slider(props) {
 
     return (
         <div className="md:hidden flex justify-center fixed w-full h-full overflow-hidden z-50">
-            <div onClick={closeSlider} className="w-1/3 bg-black opacity-80"></div>
-            <div className="bg-[#3b3b3b] h-full w-2/3">
+            <motion.div initial={{opacity: 0}} animate={{opacity: 0.8}} transition={{delay: 0.3}} onClick={closeSlider} className="right-0 w-1/3 bg-black opacity-80"></motion.div>
+            <motion.div initial={{x:200}} animate={{ x: 0 }} transition={{ duration: 0.4, type: "tween" }} className="bg-[#3b3b3b] h-full w-2/3">
 
                 <div className="flex justify-end pr-3 pt-2">
                     <img onClick={closeSlider} alt="" width="32px" src="https://img.icons8.com/fluency-systems-filled/48/A259FF/multiply.png"/>
@@ -45,7 +43,7 @@ export default function Slider(props) {
                     <p onClick={() => setPage(Page.HOME_PAGE)} className={`mb-6 ${props.currentPage === Page.HOME_PAGE ? additionalClasses : ""}`}>Home</p>
                     <p onClick={() => setPage(Page.CONTACT)} className={`${props.currentPage === Page.CONTACT ? additionalClasses : ""}`}>Contact</p>
                 </div>
-            </div>
+            </motion.div>
         </div>
     )
 }

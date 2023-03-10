@@ -1,5 +1,4 @@
 import {Page} from "../util/config";
-import Slider from "./Slider";
 
 export default function Navbar(props) {
 

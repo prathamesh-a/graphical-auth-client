@@ -1,10 +1,11 @@
 import axios from "axios";
 import {api} from "../static/config";
+import {header} from "./config";
 
 async function checkUsername(username, setLoading) {
     let flag
     setLoading(true)
-    await axios.get(`${api.url}/api/user/check?username=${username}`)
+    await axios.get(`${api.url}/api/user/check?username=${username}`, header)
         .then(r => {
             flag =  r.data.exists
             setLoading(false)

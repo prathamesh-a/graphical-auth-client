@@ -5,3 +5,5 @@ export const Page = {
     CONTACT: "contact",
     LOGIN_PAGE: "loginpage"
 }
+
+export const header = {headers: {"Access-Control-Allow-Origin": "*"}}
